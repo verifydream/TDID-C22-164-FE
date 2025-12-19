@@ -24,6 +24,9 @@ const Navbar = () => {
           <Link className={`navbar-brand ${isActive('/recap') ? 'active' : ''}`} to="/recap">
             <i className="far fa-copy"></i>Report
           </Link>
+          <Link className={`navbar-brand ${isActive('/pomodoro') ? 'active' : ''}`} to="/pomodoro">
+            <i className="fas fa-stopwatch"></i>Timer
+          </Link>
           <Link className={`navbar-brand ${isActive('/about') ? 'active' : ''}`} to="/about">
             <i className="fas fa-address-card"></i>About
           </Link>
@@ -45,6 +48,9 @@ const Navbar = () => {
         </Link>
         <Link to="/recap">
           <i className="far fa-copy"></i>
+        </Link>
+        <Link to="/pomodoro">
+          <i className="fas fa-stopwatch"></i>
         </Link>
         <Link to="/about">
           <i className="fas fa-address-card"></i>
