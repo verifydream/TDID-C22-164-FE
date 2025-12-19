@@ -11,6 +11,7 @@ const TodoList = lazy(() => import('./components/TodoList'));
 const Calendar = lazy(() => import('./components/Calendar'));
 const Recap = lazy(() => import('./components/Recap'));
 const About = lazy(() => import('./components/About'));
+const Pomodoro = lazy(() => import('./components/Pomodoro'));
 
 // Loading component
 const LoadingSpinner = () => (
@@ -38,6 +39,7 @@ const App = () => {
               <Route path="/todo" element={<TodoList />} />
               <Route path="/calendar" element={<Calendar />} />
               <Route path="/recap" element={<Recap />} />
+              <Route path="/pomodoro" element={<Pomodoro />} />
               <Route path="/about" element={<About />} />
             </Routes>
           </Suspense>
