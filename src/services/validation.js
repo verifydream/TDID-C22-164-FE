@@ -76,6 +76,7 @@ export const validateDateFormat = (dateString) => {
     return { isValid: false, error: 'Date contains invalid numbers' };
   }
 
+  // Validate ranges
   if (day < 1 || day > 31) {
     return { isValid: false, error: 'Invalid day (1-31)' };
   }
@@ -98,6 +99,16 @@ export const validateDateFormat = (dateString) => {
 
   if (seconds < 0 || seconds > 59) {
     return { isValid: false, error: 'Invalid seconds (0-59)' };
+  }
+
+  // Validate actual date (checks for invalid dates like Feb 31)
+  const testDate = new Date(year, month - 1, day, hours, minutes, seconds);
+  if (
+    testDate.getFullYear() !== year ||
+    testDate.getMonth() !== month - 1 ||
+    testDate.getDate() !== day
+  ) {
+    return { isValid: false, error: 'Invalid date (e.g., Feb 31 does not exist)' };
   }
 
   return { isValid: true, error: null };
