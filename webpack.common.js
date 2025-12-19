@@ -1,39 +1,59 @@
 const path = require("path");
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
-const pages = ["index", "todo", "recap", "about", "calendar"]
-
 module.exports = {
   mode: "none",
-  entry: pages.reduce(
-    (config, page) => {
-      config[page] = `./${page}.js`;
-      return config;
-    },
-    {}
-  ),
+  entry: "./src/index.js",
   output: {
-    path: __dirname + "/dist",
-    filename: "[name].js",
+    path: path.resolve(__dirname, "dist"),
+    filename: "[name].[contenthash].js",
+    publicPath: '/',
+    clean: true,
+  },
+  module: {
+    rules: [
+      {
+        test: /\.(js|jsx)$/,
+        exclude: /node_modules/,
+        use: {
+          loader: 'babel-loader',
+          options: {
+            presets: ['@babel/preset-env', '@babel/preset-react']
+          }
+        }
+      },
+      {
+        test: /\.css$/,
+        use: ['style-loader', 'css-loader']
+      }
+    ]
+  },
+  resolve: {
+    extensions: ['.js', '.jsx']
   },
   devServer: {
     static: path.join(__dirname, "dist"),
-    port: 9000
+    port: 9000,
+    historyApiFallback: true,
+    hot: true
   },
-  plugins: [].concat(
-    pages.map(
-      (page) =>
-        new HtmlWebpackPlugin({
-          inject: true,
-          template: `./${page}.html`,
-          filename: `${page}.html`,
-          chunks: [page],
-        })
-    )
-  ),
+  plugins: [
+    new HtmlWebpackPlugin({
+      template: './src/index.html',
+      filename: 'index.html',
+    })
+  ],
   optimization: {
+    runtimeChunk: 'single',
     splitChunks: {
       chunks: "all",
+      cacheGroups: {
+        vendor: {
+          test: /[\\/]node_modules[\\/]/,
+          name: 'vendors',
+          chunks: 'all',
+        },
+      },
     },
   },
 };
