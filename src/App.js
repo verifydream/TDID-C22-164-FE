@@ -1,13 +1,25 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
-import Daily from './components/Daily';
-import TodoList from './components/TodoList';
-import Calendar from './components/Calendar';
-import Recap from './components/Recap';
-import About from './components/About';
+import ErrorBoundary from './components/ErrorBoundary';
 import { requestNotificationPermission } from './services/notifications';
 import './styles/main.css';
+
+// Lazy load components for better performance
+const Daily = lazy(() => import('./components/Daily'));
+const TodoList = lazy(() => import('./components/TodoList'));
+const Calendar = lazy(() => import('./components/Calendar'));
+const Recap = lazy(() => import('./components/Recap'));
+const About = lazy(() => import('./components/About'));
+
+// Loading component
+const LoadingSpinner = () => (
+  <div className="text-center py-5">
+    <div className="spinner-border" role="status" style={{ color: '#8ec3b0' }}>
+      <span className="visually-hidden">Loading...</span>
+    </div>
+  </div>
+);
 
 const App = () => {
   useEffect(() => {
@@ -16,18 +28,22 @@ const App = () => {
   }, []);
 
   return (
-    <Router>
-      <div className="app">
-        <Navbar />
-        <Routes>
-          <Route path="/" element={<Daily />} />
-          <Route path="/todo" element={<TodoList />} />
-          <Route path="/calendar" element={<Calendar />} />
-          <Route path="/recap" element={<Recap />} />
-          <Route path="/about" element={<About />} />
-        </Routes>
-      </div>
-    </Router>
+    <ErrorBoundary>
+      <Router>
+        <div className="app">
+          <Navbar />
+          <Suspense fallback={<LoadingSpinner />}>
+            <Routes>
+              <Route path="/" element={<Daily />} />
+              <Route path="/todo" element={<TodoList />} />
+              <Route path="/calendar" element={<Calendar />} />
+              <Route path="/recap" element={<Recap />} />
+              <Route path="/about" element={<About />} />
+            </Routes>
+          </Suspense>
+        </div>
+      </Router>
+    </ErrorBoundary>
   );
 };
 

@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import ApiService from '../services/api';
 import { showNotification } from '../services/notifications';
-import { parseDateString, getTimeDifferenceInSeconds, isValidDateFormat } from '../services/dateUtils';
+import { parseDateString, getTimeDifferenceInSeconds } from '../services/dateUtils';
+import { validateTodoTitle, validateDateFormat } from '../services/validation';
 
 const TodoList = () => {
   const [todos, setTodos] = useState([]);
@@ -39,18 +40,23 @@ const TodoList = () => {
 
   // Add new todo
   const handleAdd = async () => {
-    if (!newTitle.trim()) {
-      alert('Please Input Title!');
+    // Validate title
+    const titleValidation = validateTodoTitle(newTitle);
+    if (!titleValidation.isValid) {
+      alert(titleValidation.error);
       return;
     }
 
-    if (!isValidDateFormat(newDate)) {
-      alert('Please Follow the Date Format!');
+    // Validate date
+    const dateValidation = validateDateFormat(newDate);
+    if (!dateValidation.isValid) {
+      alert(dateValidation.error);
       return;
     }
 
     try {
-      await ApiService.createTodo(newTitle, newDate);
+      // Use sanitized title
+      await ApiService.createTodo(titleValidation.sanitized, newDate);
       setNewTitle('');
       setNewDate('');
       await fetchTodos();
@@ -95,8 +101,23 @@ const TodoList = () => {
   const handleUpdate = async () => {
     if (!editTodo) return;
 
+    // Validate title
+    const titleValidation = validateTodoTitle(editTodo.title);
+    if (!titleValidation.isValid) {
+      alert(titleValidation.error);
+      return;
+    }
+
+    // Validate date
+    const dateValidation = validateDateFormat(editTodo.date);
+    if (!dateValidation.isValid) {
+      alert(dateValidation.error);
+      return;
+    }
+
     try {
-      await ApiService.updateTodo(editTodo.id, editTodo.title, editTodo.date);
+      // Use sanitized title
+      await ApiService.updateTodo(editTodo.id, titleValidation.sanitized, editTodo.date);
       setShowModal(false);
       setEditTodo(null);
       await fetchTodos();
